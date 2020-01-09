@@ -11,6 +11,7 @@ packages = [
 python = "^3.6"
 
 [tool.poetry.dev-dependencies]
+wemake-python-styleguide = "^0.13.3"
 
 [tool.poetry.scripts]
 gendiff = "gendiff.scripts.gendiff:main"
