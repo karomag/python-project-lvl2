@@ -1,7 +1,16 @@
 [tool.poetry]
 name = "karomag_gendiff"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
+readme = "README.md"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+]
 authors = ["Karomag <roma-novikov@mail.ru>"]
 packages = [
     { include = "gendiff" },
@@ -19,3 +28,7 @@ gendiff = "gendiff.scripts.gendiff:main"
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[[tool.poetry.source]]
+name = "testpypi"
+url = "https://test.pypi.org/legacy/"
