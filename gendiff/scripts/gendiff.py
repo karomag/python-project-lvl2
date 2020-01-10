@@ -3,18 +3,13 @@
 
 """Gendiff main script."""
 
-import argparse
-
-parser = argparse.ArgumentParser(description='Generate diff')
-parser.add_argument('first_file')
-parser.add_argument('second_file')
-parser.add_argument('-f', '--format', help='set format of output')
-parser.parse_args()
+from gendiff.cli import parse_args
 
 
 def main():
     """Run cli."""
-    print('pass')
+    options = parse_args()
+    print(options)
 
 
 if __name__ == '__main__':

@@ -1,18 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""CLI utility gendiff.
+"""Top-level module for gendiff."""
 
-usage: gendiff [-h] [-f FORMAT] first_file second_file
+from gendiff.cli import generate_diff
 
-Generate diff
-
-positional arguments:
-  first_file
-  second_file
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -f FORMAT, --format FORMAT
-                        set format of output
-
-"""
+__all__ = ['generate_diff']
