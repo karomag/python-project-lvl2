@@ -3,13 +3,14 @@
 
 """Gendiff main script."""
 
-from gendiff.cli import parse_args
+from gendiff.cli import generate_diff, parse_args
 
 
 def main():
     """Run cli."""
     options = parse_args()
-    print(options)
+    res = generate_diff(options.first_file, options.second_file)
+    print(res)
 
 
 if __name__ == '__main__':
