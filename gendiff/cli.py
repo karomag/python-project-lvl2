@@ -29,16 +29,16 @@ def parse_args():
     return parser.parse_args()
 
 
-def _get_dic_from_file(path_to_file):
+def _get_set_from_json(path_to_file):
     with open(path.abspath(path_to_file)) as inf:
-        return json.load(inf)
+        return set(json.load(inf).items())
 
 
 def _modify_keys(input_set, symbol=' '):
     temp_dic = {}
     for element in input_set:
-        key, value = element
-        temp_dic[symbol + ' ' + key] = value
+        key, value_dic = element
+        temp_dic['{0} {1}'.format(symbol, key)] = value_dic
     return temp_dic
 
 
@@ -52,14 +52,11 @@ def generate_diff(path_to_file_before, path_to_file_after):
     Returns:
         file1, file2
     """
-    file_before = _get_dic_from_file(path_to_file_before)
-    file_after = _get_dic_from_file(path_to_file_after)
-    set_keys_before = set(file_before.items())
-    set_keys_after = set(file_after.items())
+    set_items_before = _get_set_from_json(path_to_file_before)
+    set_items_after = _get_set_from_json(path_to_file_after)
     diff_dic = {}
-    diff_dic.update(_modify_keys(set_keys_after - set_keys_before, '+'))
-    diff_dic.update(_modify_keys(set_keys_before - set_keys_after, '-'))
-    diff_dic.update(dict(set_keys_before & set_keys_after))
-    print(diff_dic)
+    diff_dic.update(_modify_keys(set_items_after - set_items_before, '+'))
+    diff_dic.update(_modify_keys(set_items_before - set_items_after, '-'))
+    diff_dic.update(dict(set_items_before & set_items_after))
 
-    return set_keys_before, set_keys_after
+    return json.dumps(diff_dic)
