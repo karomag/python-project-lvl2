@@ -5,7 +5,7 @@ lint:
 	poetry run flake8 gendiff
 
 tests:
-	pytest
+	poetry run pytest --cov gendiff/
 
 build: lint
 	poetry build
