@@ -5,7 +5,7 @@ lint:
 	poetry run flake8 gendiff
 
 tests:
-	poetry run pytest --cov gendiff/
+	poetry run pytest --cov=gendiff tests/ --cov-report xml
 
 build: lint
 	poetry build
