@@ -18,7 +18,6 @@ before_script:
 
 # command to run tests
 script:
-  - make lint
   - make tests
 
 after_script:
