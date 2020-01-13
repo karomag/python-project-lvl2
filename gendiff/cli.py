@@ -54,9 +54,13 @@ def generate_diff(path_to_file_before, path_to_file_after):
     """
     set_items_before = _get_set_from_json(path_to_file_before)
     set_items_after = _get_set_from_json(path_to_file_after)
-    diff_dic = {}
+    diff_dic = dict(_modify_keys(set_items_before & set_items_after))
     diff_dic.update(_modify_keys(set_items_after - set_items_before, '+'))
     diff_dic.update(_modify_keys(set_items_before - set_items_after, '-'))
-    diff_dic.update(dict(set_items_before & set_items_after))
 
-    return json.dumps(diff_dic)
+    diff_string = '{\n'
+    for key_dic in sorted(diff_dic.keys(), key=lambda element: element[2:]):
+        diff_string += ' {0}: {1}\n'.format(key_dic, diff_dic[key_dic])
+    diff_string += '}'
+
+    return diff_string
