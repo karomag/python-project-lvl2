@@ -202,7 +202,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# Test dataset
-before.json
-after.json
