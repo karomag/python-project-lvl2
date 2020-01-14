@@ -600,7 +600,7 @@ pytest = ">=3.6"
 testing = ["fields", "hunter", "process-tests (2.0.2)", "six", "virtualenv"]
 
 [[package]]
-category = "dev"
+category = "main"
 description = "YAML parser and emitter for Python"
 name = "pyyaml"
 optional = false
@@ -760,7 +760,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "44ea5521021876a8ec31d98068160f5843d8fe96f7357a09ed47793211aedd31"
+content-hash = "e64750271353fa97cc7a952155f6513df23f185b3acf9146c07dd4ad6937d138"
 python-versions = "^3.6"
 
 [metadata.files]

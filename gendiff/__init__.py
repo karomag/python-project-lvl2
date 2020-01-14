@@ -2,6 +2,6 @@
 
 """Top-level module for gendiff."""
 
-from gendiff.cli import generate_diff
+from gendiff.module import generate_diff
 
 __all__ = ['generate_diff']
