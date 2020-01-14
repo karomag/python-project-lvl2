@@ -8,13 +8,10 @@ from os import path
 import yaml
 
 
-def _get_set_from_json(path_to_file):
+def _get_set_from_file(path_to_file):
     with open(path.abspath(path_to_file)) as inf:
-        return set(json.load(inf).items())
-
-
-def _get_set_from_yaml(path_to_file):
-    with open(path.abspath(path_to_file)) as inf:
+        if path.splitext(path.basename(path_to_file)) == '.json':
+            return set(json.load(inf).items())
         return set(yaml.safe_load(inf).items())
 
 
@@ -36,12 +33,8 @@ def generate_diff(path_to_file_before, path_to_file_after):
     Returns:
         str; diff string
     """
-    if path.splitext(path.basename(path_to_file_before)) == '.json':
-        set_items_before = _get_set_from_json(path_to_file_before)
-        set_items_after = _get_set_from_json(path_to_file_after)
-    else:
-        set_items_before = _get_set_from_yaml(path_to_file_before)
-        set_items_after = _get_set_from_yaml(path_to_file_after)
+    set_items_before = _get_set_from_file(path_to_file_before)
+    set_items_after = _get_set_from_file(path_to_file_after)
     diff_dic = dict(_modify_keys(set_items_before & set_items_after))
     diff_dic.update(_modify_keys(set_items_after - set_items_before, '+'))
     diff_dic.update(_modify_keys(set_items_before - set_items_after, '-'))
