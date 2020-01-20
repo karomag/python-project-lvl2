@@ -2,25 +2,25 @@
 
 """Generate diff."""
 
-import json
 from os import path
 
-import yaml
+from gendiff.parsers import parse_file
 
 
-def get_set_from_file(path_to_file):
-    """Get set from file.
+def read_file(path_to_file):
+    """Read file.
 
     Args:
         path_to_file: file to loading
 
     Returns:
-        set
+        dictionary
     """
     with open(path.abspath(path_to_file)) as inf:
-        if path.splitext(path.basename(path_to_file)) == '.json':
-            return set(json.load(inf).items())
-        return set(yaml.safe_load(inf).items())
+        return parse_file(
+            inf.read(),
+            path.splitext(path.basename(path_to_file))[1],
+        )
 
 
 def modify_keys(input_set, symbol=' '):
@@ -50,15 +50,15 @@ def generate_diff(path_to_file_before, path_to_file_after):
     Returns:
         str; diff string
     """
-    set_items_before = get_set_from_file(path_to_file_before)
-    set_items_after = get_set_from_file(path_to_file_after)
-    diff_dic = dict(modify_keys(set_items_before & set_items_after))
-    diff_dic.update(modify_keys(set_items_after - set_items_before, '+'))
-    diff_dic.update(modify_keys(set_items_before - set_items_after, '-'))
+    before_file = read_file(path_to_file_before)
+    after_file = read_file(path_to_file_after)
+    # diff_dic = dict(modify_keys(set_items_before & set_items_after))
+    # diff_dic.update(modify_keys(set_items_after - set_items_before, '+'))
+    # diff_dic.update(modify_keys(set_items_before - set_items_after, '-'))
 
-    diff_string = '{\n'
-    for key_dic in sorted(diff_dic.keys(), key=lambda element: element[2:]):
-        diff_string += ' {0}: {1}\n'.format(key_dic, diff_dic[key_dic])
-    diff_string += '}'
+    # diff_string = '{\n'
+    # for key_dic in sorted(diff_dic.keys(), key=lambda element: element[2:]):
+    #    diff_string += ' {0}: {1}\n'.format(key_dic, diff_dic[key_dic])
+    # diff_string += '}'
 
-    return diff_string
+    return before_file.keys()

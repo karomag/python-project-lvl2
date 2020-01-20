@@ -3,6 +3,9 @@
 """Parsers."""
 
 import argparse
+import json
+
+import yaml
 
 
 def parse_args():
@@ -24,3 +27,24 @@ def parse_args():
     group.add_argument('-f', '--format', help='set format of output')
 
     return parser.parse_args()
+
+
+def parse_file(inf, file_format):
+    """Read file and return dictionary.
+
+    Args:
+        inf: input file
+        file_format: file extension
+
+    Returns:
+        dictionary
+    """
+    print(inf)
+    print(file_format)
+    parser = {
+        '.json': json.loads,
+        '.yml': yaml.safe_load,
+        '.yaml': yaml.safe_load,
+    }
+
+    return parser[file_format](inf)
