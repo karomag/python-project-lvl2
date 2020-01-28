@@ -2,7 +2,7 @@
 
 """Tests for generate_diff."""
 
-from gendiff.module import generate_diff, modify_keys
+from gendiff.module import generate_diff
 
 
 def test_generate_diff_json():
@@ -25,9 +25,3 @@ def test_generate_diff_yaml():
     with open('gendiff/tests/fixtures/diff_before_after.txt') as inf:
         correct_answer = inf.read()
     assert result_generate_diff == correct_answer
-
-
-def test_modify_keys():
-    """Test modify keys."""
-    dic = modify_keys({('key1', 'value1'), ('key2', 'value2')}, '+')
-    assert dic == {'+ key1': 'value1', '+ key2': 'value2'}
