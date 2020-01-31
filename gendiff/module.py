@@ -41,6 +41,11 @@ def add_node(diff, before_dict, after_dict):
         else:
             if isinstance(before_dict[key], dict) and isinstance(after_dict[key], dict):
                 add_node(diff[key], before_dict[key], after_dict[key])
+            elif before_dict[key] != after_dict[key]:
+                diff[key] = {
+                    'state': 'old',
+                    'value': before_dict[key],
+                }
             else:
                 diff[key] = {
                     'state': 'old',
