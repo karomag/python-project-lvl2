@@ -2,8 +2,8 @@
 
 """Generate diff."""
 
-from os import path
 from collections import defaultdict
+from os import path
 
 from gendiff.parsers import parse_file
 
@@ -25,32 +25,36 @@ def read_file(path_to_file):
 
 
 def add_node(diff, before_dict, after_dict):
-    """"""
-    data = before_dict.keys() | after_dict.keys()
-    for key in data:
-        if key in before_dict and key not in after_dict:
-            diff[key] = {
-                'state': 'deleted',
-                'value': before_dict[key],
-            }
-        elif key not in before_dict and key in after_dict:
-            diff[key] = {
-                'state': 'added',
-                'value': after_dict[key],
-            }
+    """Add node in diff.
+
+    Args:
+        diff: dictionary
+        before_dict: before data
+        after_dict:  after data
+    """
+    set1 = set(before_dict.keys())
+    set2 = set(after_dict.keys())
+    for key in set1 | set2:
+        before_value = before_dict.get(key)
+        after_value = after_dict.get(key)
+
+        # set1 & set2
+        if isinstance(before_value, dict) and isinstance(after_value, dict):
+            add_node(diff[key], before_value, after_value)
+        if before_value == after_value:
+            diff[(key, '   ')] = before_value
         else:
-            if isinstance(before_dict[key], dict) and isinstance(after_dict[key], dict):
-                add_node(diff[key], before_dict[key], after_dict[key])
-            elif before_dict[key] != after_dict[key]:
-                diff[key] = {
-                    'state': 'old',
-                    'value': before_dict[key],
-                }
-            else:
-                diff[key] = {
-                    'state': 'old',
-                    'value': before_dict[key],
-                }
+            diff[(key, ' - ')] = before_value
+            diff[(key, ' + ')] = after_value
+            
+        # set1 - set2
+        if key in before_dict and key not in after_dict:
+            diff[(key, ' - ')] = before_value
+            continue
+        # set2 - set1
+        if key not in before_dict and key in after_dict:
+            diff[(key, ' + ')] = after_value
+            continue
 
 
 def generate_diff(path_to_file_before, path_to_file_after):
