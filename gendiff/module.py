@@ -2,6 +2,7 @@
 
 """Generate diff."""
 
+import json
 from os import path
 
 from gendiff.parsers import parse_file
@@ -39,16 +40,16 @@ def check_key(key, diff, before_dict, after_dict):
     # set1 & set2
     if key in set2 & set1:
         if before_value == after_value:
-            diff[(key, '  ')] = before_value
+            diff[(key, 'old')] = before_value
         else:
-            diff[(key, '- ')] = before_value
-            diff[(key, '+ ')] = after_value
+            diff[(key, 'deleted')] = before_value
+            diff[(key, 'added ')] = after_value
     # set1 - set2
     if key in set1 - set2:
-        diff[(key, '- ')] = before_value
+        diff[(key, 'deleted')] = before_value
     # set2 - set1
     if key in set2 - set1:
-        diff[(key, '+ ')] = after_value
+        diff[(key, 'added')] = after_value
 
 
 def add_node(diff, before_dict, after_dict):
@@ -62,12 +63,14 @@ def add_node(diff, before_dict, after_dict):
     set1 = set(before_dict.keys())
     set2 = set(after_dict.keys())
     for key in set1 | set2:
-        are_children = (isinstance(before_dict.get(key), dict)
-            and isinstance(after_dict.get(key), dict)  # noqa: W503
+        are_children = (
+            isinstance(before_dict.get(key), dict)
+        ) and (
+            isinstance(after_dict.get(key), dict)
         )
         if are_children:
             add_node(
-                diff.setdefault((key, '   '), {}),
+                diff.setdefault((key, 'old'), {}),
                 before_dict.get(key),
                 after_dict.get(key),
             )
@@ -90,5 +93,6 @@ def generate_diff(path_to_file_before, path_to_file_after):
 
     diff = {}
     add_node(diff, before_dict, after_dict)
+    diff_string = json.dumps(diff, sort_keys=True, indent=2)
 
-    return diff
+    return diff_string.replace('"', '')
