@@ -2,7 +2,6 @@
 
 """Generate diff."""
 
-from collections import defaultdict
 from os import path
 
 from gendiff.parsers import parse_file
@@ -24,37 +23,42 @@ def read_file(path_to_file):
         )
 
 
-def add_node(diff, before_dict, after_dict):
-    """Add node in diff.
+def check_key(key, diff, before_dict, after_dict):
+    set1 = set(before_dict.keys())
+    set2 = set(after_dict.keys())
+    before_value = before_dict.get(key)
+    after_value = after_dict.get(key)
+    # set1 & set2
+    if key in set2 & set1:
+        if before_value == after_value:
+            diff[(key, '  ')] = before_value
+        else:
+            diff[(key, '- ')] = before_value
+            diff[(key, '+ ')] = after_value
+    # set1 - set2
+    if key in set1 - set2:
+        diff[(key, '- ')] = before_value
+    # set2 - set1
+    if key in set2 - set1:
+        diff[(key, '+ ')] = after_value
 
-    Args:
-        diff: dictionary
-        before_dict: before data
-        after_dict:  after data
-    """
+
+def add_node(diff, before_dict, after_dict):
     set1 = set(before_dict.keys())
     set2 = set(after_dict.keys())
     for key in set1 | set2:
-        before_value = before_dict.get(key)
-        after_value = after_dict.get(key)
-
-        # set1 & set2
-        if isinstance(before_value, dict) and isinstance(after_value, dict):
-            add_node(diff[key], before_value, after_value)
-        if before_value == after_value:
-            diff[(key, '   ')] = before_value
+        is_children = (
+            isinstance(before_dict.get(key), dict)
+            and isinstance(after_dict.get(key), dict)
+        )
+        if is_children:
+            add_node(
+                diff.setdefault((key, '   '), {}),
+                before_dict.get(key),
+                after_dict.get(key),
+            )
         else:
-            diff[(key, ' - ')] = before_value
-            diff[(key, ' + ')] = after_value
-            
-        # set1 - set2
-        if key in before_dict and key not in after_dict:
-            diff[(key, ' - ')] = before_value
-            continue
-        # set2 - set1
-        if key not in before_dict and key in after_dict:
-            diff[(key, ' + ')] = after_value
-            continue
+            check_key(key, diff, before_dict, after_dict)
 
 
 def generate_diff(path_to_file_before, path_to_file_after):
@@ -70,7 +74,7 @@ def generate_diff(path_to_file_before, path_to_file_after):
     before_dict = read_file(path_to_file_before)
     after_dict = read_file(path_to_file_after)
 
-    diff = defaultdict(dict)
+    diff = {}
     add_node(diff, before_dict, after_dict)
 
     return diff
