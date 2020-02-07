@@ -24,6 +24,14 @@ def read_file(path_to_file):
 
 
 def check_key(key, diff, before_dict, after_dict):
+    """Check key for change.
+
+    Args:
+        key: current key
+        diff: dictionary
+        before_dict: before data
+        after_dict:  after data
+    """
     set1 = set(before_dict.keys())
     set2 = set(after_dict.keys())
     before_value = before_dict.get(key)
@@ -44,14 +52,20 @@ def check_key(key, diff, before_dict, after_dict):
 
 
 def add_node(diff, before_dict, after_dict):
+    """Add node in diff.
+
+    Args:
+        diff: dictionary
+        before_dict: before data
+        after_dict:  after data
+    """
     set1 = set(before_dict.keys())
     set2 = set(after_dict.keys())
     for key in set1 | set2:
-        is_children = (
-            isinstance(before_dict.get(key), dict)
-            and isinstance(after_dict.get(key), dict)
+        are_children = (isinstance(before_dict.get(key), dict)
+            and isinstance(after_dict.get(key), dict)  # noqa: W503
         )
-        if is_children:
+        if are_children:
             add_node(
                 diff.setdefault((key, '   '), {}),
                 before_dict.get(key),
