@@ -39,16 +39,16 @@ def check_key(key, diff, before_dict, after_dict):
     # set1 & set2
     if key in set2 & set1:
         if before_value == after_value:
-            diff[(key, '  ')] = before_value
+            diff[(key, 'old')] = before_value
         else:
-            diff[(key, '- ')] = before_value
-            diff[(key, '+ ')] = after_value
+            diff[(key, 'deleted')] = before_value
+            diff[(key, 'added ')] = after_value
     # set1 - set2
     if key in set1 - set2:
-        diff[(key, '- ')] = before_value
+        diff[(key, 'deleted')] = before_value
     # set2 - set1
     if key in set2 - set1:
-        diff[(key, '+ ')] = after_value
+        diff[(key, 'added')] = after_value
 
 
 def add_node(diff, before_dict, after_dict):
@@ -67,7 +67,7 @@ def add_node(diff, before_dict, after_dict):
         )
         if are_children:
             add_node(
-                diff.setdefault((key, '   '), {}),
+                diff.setdefault((key, 'old'), {}),
                 before_dict.get(key),
                 after_dict.get(key),
             )
