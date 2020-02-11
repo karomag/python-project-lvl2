@@ -2,7 +2,6 @@
 
 """Generate diff."""
 
-import json
 from os import path
 
 from gendiff.parsers import parse_file
@@ -93,6 +92,5 @@ def generate_diff(path_to_file_before, path_to_file_after):
 
     diff = {}
     add_node(diff, before_dict, after_dict)
-    diff_string = json.dumps(diff, sort_keys=True, indent=2)
 
-    return diff_string.replace('"', '')
+    return diff
