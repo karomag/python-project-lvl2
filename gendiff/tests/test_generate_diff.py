@@ -2,7 +2,7 @@
 
 """Tests for generate_diff."""
 
-from gendiff.module import generate_diff
+from gendiff.build_diff import generate_diff
 
 
 def test_generate_diff_json():
