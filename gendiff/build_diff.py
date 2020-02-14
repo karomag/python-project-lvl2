@@ -7,17 +7,23 @@ from os import path
 
 import yaml
 
-from gendiff.constants import (
-    ADDED,
-    AFTER_VALUE,
-    BEFORE_VALUE,
-    CHANGED,
-    CHILDREN,
-    DELETED,
-    TYPE_NODE,
-    UNCHANGED,
-    VALUE,
-)
+from gendiff.constants import ADDED, CHANGED, CHILDREN, DELETED, UNCHANGED
+
+
+def _parse_file(inf, file_format):
+    parser = {
+        '.json': json.loads,
+        '.yml': yaml.safe_load,
+    }
+    return parser[file_format](inf)
+
+
+def _read_file(path_to_file):
+    with open(path.abspath(path_to_file)) as inf:
+        return _parse_file(
+            inf.read(),
+            path.splitext(path.basename(path_to_file))[1],
+        )
 
 
 def generate_diff(path_to_file_before, path_to_file_after):
@@ -34,26 +40,29 @@ def generate_diff(path_to_file_before, path_to_file_after):
     after_dict = _read_file(path_to_file_after)
 
     diff = _build_diff(before_dict, after_dict)
-
-    return diff
+    print(diff)
+    report = '{\n'
+    report += _render_diff(diff)
+    report += '}'
+    return report
 
 
 def _build_diff(before_dict, after_dict):
     nodes = {}
     for key in sorted(before_dict.keys() | after_dict.keys()):
-        have_children = (
+        node_has_children = (
             isinstance(before_dict.get(key), dict)
         ) and (
             isinstance(after_dict.get(key), dict)
         )
-        if have_children:
-            nodes[key] = {
-                TYPE_NODE: UNCHANGED,
-                CHILDREN: _build_diff(
+        if node_has_children:
+            nodes[key] = (
+                CHILDREN,
+                _build_diff(
                     before_dict.get(key),
                     after_dict.get(key),
                 ),
-            }
+            )
         else:
             nodes[key] = _check_key(key, before_dict, after_dict)
     return nodes
@@ -74,23 +83,14 @@ def _check_key(key, before_dict, after_dict):
         type_tag = ADDED
 
     node = {
-        ADDED: {
-            TYPE_NODE: ADDED,
-            VALUE: _get_value(after_dict.get(key)),
-        },
-        CHANGED: {
-            TYPE_NODE: CHANGED,
-            BEFORE_VALUE: _get_value(before_dict.get(key)),
-            AFTER_VALUE: _get_value(after_dict.get(key)),
-        },
-        DELETED: {
-            TYPE_NODE: DELETED,
-            VALUE: _get_value(before_dict.get(key)),
-        },
-        UNCHANGED: {
-            TYPE_NODE: UNCHANGED,
-            VALUE: _get_value(before_dict.get(key)),
-        },
+        ADDED: (ADDED, _get_value(after_dict.get(key))),
+        CHANGED: (
+            CHANGED,
+            _get_value(before_dict.get(key)),
+            _get_value(after_dict.get(key)),
+        ),
+        DELETED: (DELETED, _get_value(before_dict.get(key))),
+        UNCHANGED: (UNCHANGED, _get_value(before_dict.get(key))),
     }
     return node[type_tag]
 
@@ -103,17 +103,27 @@ def _get_value(input_value):
     return input_value
 
 
-def _parse_file(inf, file_format):
-    parser = {
-        '.json': json.loads,
-        '.yml': yaml.safe_load,
+def _render_diff(diff: dict):
+    string_generator = {
+        ADDED: '{indent}+ {key}: {value1}\n',
+        DELETED: '{indent}- {key}: {value1}\n',
+        UNCHANGED: '{indent}  {key}: {value1}\n',
+        CHANGED: '{indent}- {key}: {value1}\n'
+                 '{indent}+ {key}: {value2}\n',
     }
-    return parser[file_format](inf)
-
-
-def _read_file(path_to_file):
-    with open(path.abspath(path_to_file)) as inf:
-        return _parse_file(
-            inf.read(),
-            path.splitext(path.basename(path_to_file))[1],
-        )
+    string = '';
+    indent = '  ';
+    for key, value_diff in diff.items():
+        type_key = value_diff[0]
+        if type_key == CHANGED:
+            type_key, value_key1, value_key2 = value_diff
+            string += (string_generator[type_key].format(indent=indent * 2, key=key, value1=value_key1, value2=value_key2))
+        elif type_key == CHILDREN:
+            type_key, value_key1 = value_diff
+            string += indent + key + ' {\n'
+            string += _render_diff(value_key1)
+            string += '}\n'
+        else:
+            type_key, value_key1 = value_diff
+            string += (string_generator[type_key].format(indent=indent * 2, key=key, value1=value_key1))
+    return string
