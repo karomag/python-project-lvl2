@@ -14,10 +14,12 @@ from gendiff.constants import (
     CHANGED,
     CHILDREN,
     DELETED,
+    NESTED,
     TYPE_NODE,
     UNCHANGED,
     VALUE,
 )
+from gendiff.renders.json_render import render
 
 
 def generate_diff(path_to_file_before, path_to_file_after):
@@ -34,8 +36,7 @@ def generate_diff(path_to_file_before, path_to_file_after):
     after_dict = _read_file(path_to_file_after)
 
     diff = _build_diff(before_dict, after_dict)
-
-    return diff
+    return render(diff)
 
 
 def _build_diff(before_dict, after_dict):
@@ -48,7 +49,7 @@ def _build_diff(before_dict, after_dict):
         )
         if have_children:
             nodes[key] = {
-                TYPE_NODE: UNCHANGED,
+                TYPE_NODE: NESTED,
                 CHILDREN: _build_diff(
                     before_dict.get(key),
                     after_dict.get(key),
@@ -64,7 +65,7 @@ def _check_key(key, before_dict, after_dict):
     set2 = set(after_dict.keys())
 
     if key in set2 & set1:
-        if _get_value(before_dict.get(key)) == _get_value(after_dict.get(key)):
+        if before_dict.get(key) == after_dict.get(key):
             type_tag = UNCHANGED
         else:
             type_tag = CHANGED
@@ -76,31 +77,23 @@ def _check_key(key, before_dict, after_dict):
     node = {
         ADDED: {
             TYPE_NODE: ADDED,
-            VALUE: _get_value(after_dict.get(key)),
+            VALUE: after_dict.get(key),
         },
         CHANGED: {
             TYPE_NODE: CHANGED,
-            BEFORE_VALUE: _get_value(before_dict.get(key)),
-            AFTER_VALUE: _get_value(after_dict.get(key)),
+            BEFORE_VALUE: before_dict.get(key),
+            AFTER_VALUE: after_dict.get(key),
         },
         DELETED: {
             TYPE_NODE: DELETED,
-            VALUE: _get_value(before_dict.get(key)),
+            VALUE: before_dict.get(key),
         },
         UNCHANGED: {
             TYPE_NODE: UNCHANGED,
-            VALUE: _get_value(before_dict.get(key)),
+            VALUE: before_dict.get(key),
         },
     }
     return node[type_tag]
-
-
-def _get_value(input_value):
-    if input_value is True:
-        return 'true'
-    if input_value is False:
-        return 'false'
-    return input_value
 
 
 def _parse_file(inf, file_format):

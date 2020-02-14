@@ -2,7 +2,7 @@
 
 """Constants."""
 
-ADDED = 'added'
+ADDED = '+'
 
 AFTER_VALUE = 'after_value'
 
@@ -12,10 +12,14 @@ CHANGED = 'changed'
 
 CHILDREN = 'children'
 
-DELETED = 'deleted'
+DELETED = '-'
+
+INDENT = '  '
+
+NESTED = 'nested'
 
 TYPE_NODE = 'type'
 
-UNCHANGED = 'unchanged'
+UNCHANGED = ' '
 
 VALUE = 'value'
