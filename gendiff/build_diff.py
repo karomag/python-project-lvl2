@@ -19,7 +19,7 @@ from gendiff.constants import (
     UNCHANGED,
     VALUE,
 )
-from gendiff.renders.json_render import render
+from gendiff.renders.nested_render import render
 
 
 def generate_diff(path_to_file_before, path_to_file_after):
