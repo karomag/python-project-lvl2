@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Render diff as json."""
+"""Render diff like nested file."""
 
 
 from gendiff.constants import (
@@ -43,14 +43,14 @@ def render(diff: dict, level: int = 1):
                 indent,
                 DELETED,
                 key,
-                value_diff.get(BEFORE_VALUE),
+                _value_to_string(value_diff.get(BEFORE_VALUE)),
             ),
             )
             report_list.append('{0}{1} {2}: {3}'.format(
                 indent,
                 ADDED,
                 key,
-                value_diff.get(AFTER_VALUE),
+                _value_to_string(value_diff.get(AFTER_VALUE)),
             ),
             )
         else:

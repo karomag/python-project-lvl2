@@ -22,80 +22,6 @@ from gendiff.constants import (
 from gendiff.formatters import nested_render
 
 
-def generate_diff(path_to_file_before, path_to_file_after):
-    """Find differences in files.
-
-    Args:
-        path_to_file_before: path to file1
-        path_to_file_after: path to file2
-
-    Returns:
-        str; diff string
-    """
-    before_dict = _read_file(path_to_file_before)
-    after_dict = _read_file(path_to_file_after)
-
-    diff = _build_diff(before_dict, after_dict)
-    return nested_render.render(diff)
-
-
-def _build_diff(before_dict, after_dict):
-    nodes = {}
-    for key in sorted(before_dict.keys() | after_dict.keys()):
-        have_children = (
-            isinstance(before_dict.get(key), dict)
-        ) and (
-            isinstance(after_dict.get(key), dict)
-        )
-        if have_children:
-            nodes[key] = {
-                TYPE_NODE: NESTED,
-                CHILDREN: _build_diff(
-                    before_dict.get(key),
-                    after_dict.get(key),
-                ),
-            }
-        else:
-            nodes[key] = _check_key(key, before_dict, after_dict)
-    return nodes
-
-
-def _check_key(key, before_dict, after_dict):
-    set1 = set(before_dict.keys())
-    set2 = set(after_dict.keys())
-
-    if key in set2 & set1:
-        if before_dict.get(key) == after_dict.get(key):
-            type_tag = UNCHANGED
-        else:
-            type_tag = CHANGED
-    if key in set1 - set2:
-        type_tag = DELETED
-    if key in set2 - set1:
-        type_tag = ADDED
-
-    node = {
-        ADDED: {
-            TYPE_NODE: ADDED,
-            VALUE: after_dict.get(key),
-        },
-        CHANGED: {
-            TYPE_NODE: CHANGED,
-            BEFORE_VALUE: before_dict.get(key),
-            AFTER_VALUE: after_dict.get(key),
-        },
-        DELETED: {
-            TYPE_NODE: DELETED,
-            VALUE: before_dict.get(key),
-        },
-        UNCHANGED: {
-            TYPE_NODE: UNCHANGED,
-            VALUE: before_dict.get(key),
-        },
-    }
-    return node[type_tag]
-
-
 def _parse_file(inf, file_format):
     parser = {
         '.json': json.loads,
@@ -110,3 +36,75 @@ def _read_file(path_to_file):
             inf.read(),
             path.splitext(path.basename(path_to_file))[1],
         )
+
+
+def _check_key(key, before_value, after_value):
+    if before_value == after_value:
+        type_tag = UNCHANGED
+    else:
+        type_tag = CHANGED
+    if after_value is None:
+        type_tag = DELETED
+    if before_value is None:
+        type_tag = ADDED
+
+    node = {
+        ADDED: {
+            TYPE_NODE: ADDED,
+            VALUE: after_value,
+        },
+        CHANGED: {
+            TYPE_NODE: CHANGED,
+            BEFORE_VALUE: before_value,
+            AFTER_VALUE: after_value,
+        },
+        DELETED: {
+            TYPE_NODE: DELETED,
+            VALUE: before_value,
+        },
+        UNCHANGED: {
+            TYPE_NODE: UNCHANGED,
+            VALUE: before_value,
+        },
+    }
+    return node[type_tag]
+
+
+def _build_diff(key, before_dict, after_dict):
+    have_children = (
+        isinstance(before_dict, dict)
+    ) and (
+        isinstance(after_dict, dict)
+    )
+    if have_children:
+        node = {
+            TYPE_NODE: NESTED,
+            CHILDREN: _build_diff(
+                key,
+                before_dict.get(key),
+                after_dict.get(key),
+            ),
+        }
+    else:
+        node = _check_key(key, before_dict, after_dict)
+    return node
+
+
+def generate_diff(path_to_file_before, path_to_file_after):
+    """Find differences in files.
+
+    Args:
+        path_to_file_before: path to file1
+        path_to_file_after: path to file2
+
+    Returns:
+        str; diff string
+    """
+    before_dict = _read_file(path_to_file_before)
+    after_dict = _read_file(path_to_file_after)
+
+    diff = {key: _build_diff(key, before_dict.get(key), after_dict.get(key))
+        for key in sorted(before_dict.keys() | after_dict.keys())
+    }
+    print(diff)
+    return nested_render.render(diff)
