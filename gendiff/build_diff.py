@@ -19,7 +19,7 @@ from gendiff.constants import (
     UNCHANGED,
     VALUE,
 )
-from gendiff.renders.nested_render import render
+from gendiff.formatters import nested_render
 
 
 def generate_diff(path_to_file_before, path_to_file_after):
@@ -36,7 +36,7 @@ def generate_diff(path_to_file_before, path_to_file_after):
     after_dict = _read_file(path_to_file_after)
 
     diff = _build_diff(before_dict, after_dict)
-    return render(diff)
+    return nested_render.render(diff)
 
 
 def _build_diff(before_dict, after_dict):
