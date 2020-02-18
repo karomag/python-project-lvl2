@@ -7,18 +7,7 @@ from os import path
 
 import yaml
 
-from gendiff.constants import (
-    ADDED,
-    AFTER_VALUE,
-    BEFORE_VALUE,
-    CHANGED,
-    CHILDREN,
-    DELETED,
-    NESTED,
-    TYPE_NODE,
-    UNCHANGED,
-    VALUE,
-)
+from gendiff.constants import ADDED, CHANGED, DELETED, NESTED, UNCHANGED
 from gendiff.formatters import nested_render
 
 
@@ -32,15 +21,23 @@ def generate_diff(path_to_file_before, path_to_file_after):
     Returns:
         str; diff string
     """
-    before_dict = _read_file(path_to_file_before)
-    after_dict = _read_file(path_to_file_after)
+    before_dict = read_file(path_to_file_before)
+    after_dict = read_file(path_to_file_after)
 
-    diff = _build_diff(before_dict, after_dict)
-    print(diff)
+    diff = build_diff(before_dict, after_dict)
     return nested_render.render(diff)
 
 
-def _build_diff(before_dict, after_dict):
+def build_diff(before_dict, after_dict):
+    """Build structure report.
+
+    Args:
+        before_dict: before dataset
+        after_dict: after dataset
+
+    Returns:
+        diff (dict)
+    """
     nodes = {}
     for key in sorted(before_dict.keys() | after_dict.keys()):
         have_children = (
@@ -51,7 +48,7 @@ def _build_diff(before_dict, after_dict):
         if have_children:
             nodes[key] = (
                 NESTED,
-                _build_diff(before_dict.get(key), after_dict.get(key)),
+                build_diff(before_dict.get(key), after_dict.get(key)),
             )
         else:
             nodes[key] = _check_key(key, before_dict, after_dict)
@@ -89,7 +86,15 @@ def _parse_file(inf, file_format):
     return parser[file_format](inf)
 
 
-def _read_file(path_to_file):
+def read_file(path_to_file):
+    """Read file.
+
+    Args:
+        path_to_file: path to file
+
+    Returns:
+        dataset
+    """
     with open(path.abspath(path_to_file)) as inf:
         return _parse_file(
             inf.read(),

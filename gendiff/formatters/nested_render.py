@@ -5,20 +5,21 @@
 
 from gendiff.constants import (
     ADDED,
-    AFTER_VALUE,
-    BEFORE_VALUE,
     CHANGED,
-    CHILDREN,
     DELETED,
     INDENT,
     NESTED,
-    TYPE_NODE,
     UNCHANGED,
-    VALUE,
 )
 
+operators = {
+    ADDED: '+',
+    DELETED: '-',
+    UNCHANGED: ' ',
+}
 
-def render(diff: dict, level: int = 1):
+
+def render(diff: dict, level: int = 1):  # noqa: WPS210
     """Render diff to json.
 
     Args:
@@ -32,33 +33,38 @@ def render(diff: dict, level: int = 1):
     indent = INDENT * level
 
     for key, value_diff in diff.items():
-        type_key = value_diff.get(TYPE_NODE)
+        type_key, *value_key = value_diff
 
         if type_key == NESTED:
-            report_list.append('{0}{1} {2}: {{'.format(indent, UNCHANGED, key))
-            report_list.append(render(value_diff.get(CHILDREN), level + 2))
+            report_list.append('{0}{1} {2}: {{'.format(
+                indent,
+                operators[UNCHANGED],
+                key,
+            ),
+            )
+            report_list.append(render(value_key[0], level + 2))
             report_list.append('{0}}}'.format(indent + INDENT))
         elif type_key == CHANGED:
             report_list.append('{0}{1} {2}: {3}'.format(
                 indent,
-                DELETED,
+                operators[DELETED],
                 key,
-                _value_to_string(value_diff.get(BEFORE_VALUE)),
+                _value_to_string(value_key[0]),
             ),
             )
             report_list.append('{0}{1} {2}: {3}'.format(
                 indent,
-                ADDED,
+                operators[ADDED],
                 key,
-                _value_to_string(value_diff.get(AFTER_VALUE)),
+                _value_to_string(value_key[1]),
             ),
             )
         else:
             report_list.append('{0}{1} {2}: {3}'.format(
                 indent,
-                type_key,
+                operators[type_key],
                 key,
-                _value_to_string(value_diff.get(VALUE), level),
+                _value_to_string(value_key[0], level),
             ),
             )
 
