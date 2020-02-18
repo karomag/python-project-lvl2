@@ -1,6 +1,10 @@
 language: python
 python: "3.6"
 
+branches:
+  except:
+  - dev
+
 env:
   global:
     CC_TEST_REPORTER_ID=e35efc3b8337e2767ff88764c5c7b1f53b0cf46715b82d0d06b2a7f99ab65b5b
