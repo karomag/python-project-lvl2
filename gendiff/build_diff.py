@@ -36,6 +36,7 @@ def generate_diff(path_to_file_before, path_to_file_after):
     after_dict = _read_file(path_to_file_after)
 
     diff = _build_diff(before_dict, after_dict)
+    print(diff)
     return nested_render.render(diff)
 
 
@@ -48,13 +49,10 @@ def _build_diff(before_dict, after_dict):
             isinstance(after_dict.get(key), dict)
         )
         if have_children:
-            nodes[key] = {
-                TYPE_NODE: NESTED,
-                CHILDREN: _build_diff(
-                    before_dict.get(key),
-                    after_dict.get(key),
-                ),
-            }
+            nodes[key] = (
+                NESTED,
+                _build_diff(before_dict.get(key), after_dict.get(key)),
+            )
         else:
             nodes[key] = _check_key(key, before_dict, after_dict)
     return nodes
@@ -75,23 +73,10 @@ def _check_key(key, before_dict, after_dict):
         type_tag = ADDED
 
     node = {
-        ADDED: {
-            TYPE_NODE: ADDED,
-            VALUE: after_dict.get(key),
-        },
-        CHANGED: {
-            TYPE_NODE: CHANGED,
-            BEFORE_VALUE: before_dict.get(key),
-            AFTER_VALUE: after_dict.get(key),
-        },
-        DELETED: {
-            TYPE_NODE: DELETED,
-            VALUE: before_dict.get(key),
-        },
-        UNCHANGED: {
-            TYPE_NODE: UNCHANGED,
-            VALUE: before_dict.get(key),
-        },
+        ADDED: (ADDED, after_dict.get(key)),
+        CHANGED: (CHANGED, before_dict.get(key), after_dict.get(key)),
+        DELETED: (DELETED, before_dict.get(key)),
+        UNCHANGED: (UNCHANGED, before_dict.get(key)),
     }
     return node[type_tag]
 
