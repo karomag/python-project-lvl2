@@ -38,7 +38,7 @@ def _read_file(path_to_file):
         )
 
 
-def _check_key(key, before_value, after_value):
+def _check_key(before_value, after_value):
     if before_value == after_value:
         type_tag = UNCHANGED
     else:
@@ -70,23 +70,26 @@ def _check_key(key, before_value, after_value):
     return node[type_tag]
 
 
-def _build_diff(key, before_dict, after_dict):
+def _build_diff(before_value, after_value):
     have_children = (
-        isinstance(before_dict, dict)
+        isinstance(before_value, dict)
     ) and (
-        isinstance(after_dict, dict)
+        isinstance(after_value, dict)
     )
     if have_children:
-        node = {
-            TYPE_NODE: NESTED,
-            CHILDREN: _build_diff(
-                key,
-                before_dict.get(key),
-                after_dict.get(key),
-            ),
+        node = {key: _build_diff(before_value.get(key), after_value.get(key))
+            for key in sorted(before_value.keys() | after_value.keys())
+        }
+        for key in sorted(before_value.keys() | after_value.keys()):
+            node = {
+                TYPE_NODE: NESTED,
+                CHILDREN: _build_diff(
+                    before_value.get(key),
+                    after_value.get(key),
+                ),
         }
     else:
-        node = _check_key(key, before_dict, after_dict)
+        node = _check_key(before_value, after_value)
     return node
 
 
@@ -103,7 +106,7 @@ def generate_diff(path_to_file_before, path_to_file_after):
     before_dict = _read_file(path_to_file_before)
     after_dict = _read_file(path_to_file_after)
 
-    diff = {key: _build_diff(key, before_dict.get(key), after_dict.get(key))
+    diff = {key: _build_diff(before_dict.get(key), after_dict.get(key))
         for key in sorted(before_dict.keys() | after_dict.keys())
     }
     print(diff)
