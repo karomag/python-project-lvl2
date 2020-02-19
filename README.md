@@ -51,7 +51,7 @@ after.yml
 
 [![asciicast](https://asciinema.org/a/iRkttdJLEv8ahss3BYAGF2FZE.svg)](https://asciinema.org/a/iRkttdJLEv8ahss3BYAGF2FZE)
 
-## Comparing two files with nested structures.
+### The test data set of nested structures.
 before.json
 ```json
 {
@@ -94,4 +94,14 @@ after.json
   }
 }
 ```
+## Comparing two files with nested structures. The similar json report.
+
 [![asciicast](https://asciinema.org/a/GaluLQ8BhmslsX9RHMh6GWW0v.svg)](https://asciinema.org/a/GaluLQ8BhmslsX9RHMh6GWW0v)
+
+## Comparing two files with nested structures. The plain report.
+
+[![asciicast](https://asciinema.org/a/9Jp5dKF3D7rAJL2nv0X7MQcbh.svg)](https://asciinema.org/a/9Jp5dKF3D7rAJL2nv0X7MQcbh)
+
+## Comparing two files with nested structures. The json report.
+
+[![asciicast](https://asciinema.org/a/4mnKyC7Kwt8O6JgpIF6B5zUsq.svg)](https://asciinema.org/a/4mnKyC7Kwt8O6JgpIF6B5zUsq)
