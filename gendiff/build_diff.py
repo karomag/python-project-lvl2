@@ -12,9 +12,9 @@ from gendiff.formatters import json_render, nested_render, plain_render
 
 
 def generate_diff(
-    path_to_file_before,
-    path_to_file_after,
-    output_format='plain',
+    path_to_file_before: str,
+    path_to_file_after: str,
+    output_format: str = 'plain',
 ):
     """Find differences in files.
 
@@ -39,7 +39,7 @@ def generate_diff(
     return formatters[output_format](diff)
 
 
-def build_diff(before_dict, after_dict):
+def build_diff(before_dict: dict, after_dict: dict):
     """Build structure report.
 
     Args:
@@ -97,7 +97,7 @@ def _parse_file(inf, file_format):
     return parser[file_format](inf)
 
 
-def read_file(path_to_file):
+def read_file(path_to_file: str):
     """Read file.
 
     Args:

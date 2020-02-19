@@ -73,7 +73,7 @@ def render(diff: dict, level: int = 1):
     return '\n'.join(report_list)
 
 
-def _value_to_string(input_value, level: int = 1):
+def _value_to_string(input_value, level=1):
     if isinstance(input_value, dict):
         lines = ['{']
         for key, value_dict in input_value.items():
