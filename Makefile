@@ -7,7 +7,7 @@ lint:
 tests:
 	poetry run pytest --cov=gendiff gendiff/tests/ --cov-report xml
 
-build: lint
+build: tests
 	poetry build
 
 publish: build

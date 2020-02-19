@@ -51,7 +51,7 @@ after.yml
 
 [![asciicast](https://asciinema.org/a/iRkttdJLEv8ahss3BYAGF2FZE.svg)](https://asciinema.org/a/iRkttdJLEv8ahss3BYAGF2FZE)
 
-## Comparing two files with nested structures
+## Comparing two files with nested structures.
 before.json
 ```json
 {
