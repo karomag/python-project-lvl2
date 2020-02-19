@@ -24,7 +24,12 @@ def parse_args():
     parser.add_argument('second_file', type=str)
 
     group = parser.add_argument_group('format settings')
-    group.add_argument('-f', '--format', help='set format of output')
+    group.add_argument(
+        '-f',
+        '--format',
+        default='plain',
+        help='set format of output (default: plain)',
+    )
 
     return parser.parse_args()
 
@@ -32,7 +37,11 @@ def parse_args():
 def main():
     """Run cli."""
     options = parse_args()
-    diff_string = generate_diff(options.first_file, options.second_file)
+    diff_string = generate_diff(
+        options.first_file,
+        options.second_file,
+        options.format,
+    )
     print(diff_string)
 
 

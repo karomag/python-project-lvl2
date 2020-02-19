@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Render diff like nested file."""
+"""Render diff like nested."""
 
 
 from gendiff.constants import (

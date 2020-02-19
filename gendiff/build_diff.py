@@ -8,24 +8,35 @@ from os import path
 import yaml
 
 from gendiff.constants import ADDED, CHANGED, DELETED, NESTED, UNCHANGED
-from gendiff.formatters import nested_render
+from gendiff.formatters import json_render, nested_render, plain_render
 
 
-def generate_diff(path_to_file_before, path_to_file_after):
+def generate_diff(
+    path_to_file_before,
+    path_to_file_after,
+    output_format='plain',
+):
     """Find differences in files.
 
     Args:
         path_to_file_before: path to file1
         path_to_file_after: path to file2
+        output_format: plain, nested, json
 
     Returns:
-        str; diff string
+        str: diff string
     """
     before_dict = read_file(path_to_file_before)
     after_dict = read_file(path_to_file_after)
 
+    formatters = {
+        'plain': plain_render.render,
+        'nested': nested_render.render,
+        'json': json_render.render,
+    }
+
     diff = build_diff(before_dict, after_dict)
-    return nested_render.render(diff)
+    return formatters[output_format](diff)
 
 
 def build_diff(before_dict, after_dict):
