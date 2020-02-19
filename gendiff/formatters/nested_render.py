@@ -19,7 +19,7 @@ operators = {
 }
 
 
-def render(diff: dict, level: int = 1):  # noqa: WPS210
+def render(diff: dict, level: int = 1):
     """Render diff to json.
 
     Args:
@@ -32,8 +32,8 @@ def render(diff: dict, level: int = 1):  # noqa: WPS210
     report_list = []
     indent = INDENT * level
 
-    for key, value_diff in diff.items():
-        type_key, *value_key = value_diff
+    for key in diff.keys():
+        type_key, *value_key = diff[key]
 
         if type_key == NESTED:
             report_list.append('{0}{1} {2}: {{'.format(
