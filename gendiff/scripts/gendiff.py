@@ -5,7 +5,17 @@
 
 import argparse
 
+from gendiff import format
 from gendiff.build_diff import generate_diff
+
+
+def _formatters(format_string='plain'):
+    formatter = {
+        'plain': format.plain,
+        'nested': format.nested,
+        'json': format.json,
+    }
+    return formatter[format_string]
 
 
 def parse_args():
@@ -27,6 +37,7 @@ def parse_args():
     group.add_argument(
         '-f',
         '--format',
+        type=_formatters,
         default='plain',
         help='set format of output (default: plain)',
     )
