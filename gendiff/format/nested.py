@@ -32,40 +32,25 @@ def render(diff: dict, level: int = 1):
     report_list = []
     indent = INDENT * level
 
-    for key, (type_key, *value_key) in diff.items():
+    for key, (type_key, *option_value) in diff.items():  # noqa: WPS405, WPS414
+        def inner_append(operator, inner_value):  # noqa: WPS430
+            report_list.append('{0}{1} {2}: {3}'.format(
+                indent,
+                operators[operator],
+                key,
+                inner_value,
+            ),
+            )
 
         if type_key == NESTED:
-            report_list.append('{0}{1} {2}: {{'.format(
-                indent,
-                operators[UNCHANGED],
-                key,
-            ),
-            )
-            report_list.append(render(value_key[0], level + 2))
+            inner_append(UNCHANGED, '{')
+            report_list.append(render(option_value[0], level + 2))
             report_list.append('{0}}}'.format(indent + INDENT))
         elif type_key == CHANGED:
-            report_list.append('{0}{1} {2}: {3}'.format(
-                indent,
-                operators[DELETED],
-                key,
-                _value_to_string(value_key[0]),
-            ),
-            )
-            report_list.append('{0}{1} {2}: {3}'.format(
-                indent,
-                operators[ADDED],
-                key,
-                _value_to_string(value_key[1]),
-            ),
-            )
+            inner_append(DELETED, _value_to_string(option_value[0]))
+            inner_append(ADDED, _value_to_string(option_value[1]))
         else:
-            report_list.append('{0}{1} {2}: {3}'.format(
-                indent,
-                operators[type_key],
-                key,
-                _value_to_string(value_key[0], level),
-            ),
-            )
+            inner_append(type_key, _value_to_string(option_value[0], level))
 
     if level == 1:
         report_list = ['{'] + report_list + ['}']
