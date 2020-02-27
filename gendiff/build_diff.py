@@ -2,32 +2,24 @@
 
 """Generate diff."""
 
-import json
-from os import path
-
-import yaml
-
 from gendiff.constants import ADDED, CHANGED, DELETED, NESTED, UNCHANGED
 
 
 def generate_diff(
-    path_to_file_before: str,
-    path_to_file_after: str,
+    before_dict: dict,
+    after_dict: dict,
     output_format,
 ):
     """Find differences in files.
 
     Args:
-        path_to_file_before: path to file1
-        path_to_file_after: path to file2
+        before_dict: first dictionary from file
+        after_dict: secondary dictionary from file
         output_format: format.plain(), format.nested(), format.json()
 
     Returns:
         str: diff string
     """
-    before_dict = read_file(path_to_file_before)
-    after_dict = read_file(path_to_file_after)
-
     diff = build_diff(before_dict, after_dict)
     return output_format(diff)
 
@@ -80,27 +72,3 @@ def _check_key(key, before_dict, after_dict):
         UNCHANGED: (UNCHANGED, before_dict.get(key)),
     }
     return node[type_tag]
-
-
-def _parse_file(inf, file_format):
-    parser = {
-        '.json': json.loads,
-        '.yml': yaml.safe_load,
-    }
-    return parser[file_format](inf)
-
-
-def read_file(path_to_file: str):
-    """Read file.
-
-    Args:
-        path_to_file: path to file
-
-    Returns:
-        dataset
-    """
-    with open(path.abspath(path_to_file)) as inf:
-        return _parse_file(
-            inf.read(),
-            path.splitext(path.basename(path_to_file))[1],
-        )
