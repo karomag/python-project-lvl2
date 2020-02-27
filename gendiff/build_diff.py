@@ -34,41 +34,34 @@ def build_diff(before_dict: dict, after_dict: dict):
     Returns:
         diff (dict)
     """
-    nodes = {}
-    for key in sorted(before_dict.keys() | after_dict.keys()):
-        have_children = (
-            isinstance(before_dict.get(key), dict)
+    common = {}
+    common.update(
+        {
+            key: (ADDED, after_dict[key])
+            for key in sorted(after_dict.keys() - before_dict.keys())
+        },
+    )
+    common.update(
+        {
+            key: (DELETED, before_dict[key])
+            for key in sorted(before_dict.keys() - after_dict.keys())
+        },
+    )
+    for key in sorted(after_dict.keys() & before_dict.keys()):
+        old_value = before_dict.get(key)
+        new_value = after_dict.get(key)
+        has_children = (
+            isinstance(old_value, dict)
         ) and (
-            isinstance(after_dict.get(key), dict)
+            isinstance(new_value, dict)
         )
-        if have_children:
-            nodes[key] = (
+        if has_children:
+            common[key] = (
                 NESTED,
-                build_diff(before_dict.get(key), after_dict.get(key)),
+                build_diff(old_value, new_value),
             )
+        elif old_value == new_value:
+            common[key] = (UNCHANGED, old_value)
         else:
-            nodes[key] = _check_key(key, before_dict, after_dict)
-    return nodes
-
-
-def _check_key(key, before_dict, after_dict):
-    set1 = set(before_dict.keys())
-    set2 = set(after_dict.keys())
-
-    if key in set2 & set1:
-        if before_dict.get(key) == after_dict.get(key):
-            type_tag = UNCHANGED
-        else:
-            type_tag = CHANGED
-    if key in set1 - set2:
-        type_tag = DELETED
-    if key in set2 - set1:
-        type_tag = ADDED
-
-    node = {
-        ADDED: (ADDED, after_dict.get(key)),
-        CHANGED: (CHANGED, before_dict.get(key), after_dict.get(key)),
-        DELETED: (DELETED, before_dict.get(key)),
-        UNCHANGED: (UNCHANGED, before_dict.get(key)),
-    }
-    return node[type_tag]
+            common[key] = (CHANGED, old_value, new_value)
+    return common

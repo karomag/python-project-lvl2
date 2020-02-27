@@ -1,19 +1,19 @@
 {
+  "group3": [
+    "added",
+    {
+      "fee": "100500"
+    }
+  ],
+  "group2": [
+    "deleted",
+    {
+      "abc": "12345"
+    }
+  ],
   "common": [
     "nested",
     {
-      "setting1": [
-        "unchanged",
-        "Value 1"
-      ],
-      "setting2": [
-        "deleted",
-        "200"
-      ],
-      "setting3": [
-        "unchanged",
-        true
-      ],
       "setting4": [
         "added",
         "blah blah"
@@ -24,11 +24,23 @@
           "key5": "value5"
         }
       ],
+      "setting2": [
+        "deleted",
+        "200"
+      ],
       "setting6": [
         "deleted",
         {
           "key": "value"
         }
+      ],
+      "setting1": [
+        "unchanged",
+        "Value 1"
+      ],
+      "setting3": [
+        "unchanged",
+        true
       ]
     }
   ],
@@ -44,18 +56,6 @@
         "unchanged",
         "bar"
       ]
-    }
-  ],
-  "group2": [
-    "deleted",
-    {
-      "abc": "12345"
-    }
-  ],
-  "group3": [
-    "added",
-    {
-      "fee": "100500"
     }
   ]
 }
