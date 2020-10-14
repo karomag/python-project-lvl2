@@ -1,6 +1,6 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/8868e0a8226c17bee3da/maintainability)](https://codeclimate.com/github/karomag/python-project-lvl2/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8868e0a8226c17bee3da/test_coverage)](https://codeclimate.com/github/karomag/python-project-lvl2/test_coverage)
-[![Build Status](https://travis-ci.org/karomag/python-project-lvl2.svg?branch=master)](https://travis-ci.org/karomag/python-project-lvl2)
+[![Build Status](https://travis-ci.com/karomag/python-project-lvl2.svg?branch=master)](https://travis-ci.com/karomag/python-project-lvl2)
 [![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide)
 ![Build app](https://github.com/karomag/python-project-lvl2/workflows/Build%20app/badge.svg?branch=master&event=push)
 
